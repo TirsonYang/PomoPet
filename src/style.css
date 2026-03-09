@@ -1,0 +1,511 @@
+:root {
+  --primary-color: #ff6b6b;
+  --secondary-color: #4ecdc4;
+  --bg-color: rgba(255, 255, 255, 0.85);
+  --text-color: #333;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#drag-region {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  -webkit-app-region: drag;
+  z-index: 1000;
+}
+
+.app-container {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-color);
+  backdrop-filter: blur(10px);
+  border-radius: 20px; /* Only effective if the window is transparent and framed properly, but on Windows frameless + transparent means the window itself is the boundary */
+  /* Note: On Windows, creating a rounded window usually requires specific transparency hacks or simply using a transparent window with a rounded container inside. */
+  display: flex;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: rgba(30, 30, 30, 0.85);
+    --text-color: #eee;
+  }
+  .controls button.btn-secondary {
+    background: #444;
+    color: #eee;
+  }
+}
+
+.column {
+  flex: 1;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-right: 1px solid rgba(128, 128, 128, 0.1);
+  color: var(--text-color);
+  position: relative;
+}
+
+.column:last-child {
+  border-right: none;
+}
+
+h2 {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  opacity: 0.8;
+  font-weight: 600;
+}
+
+/* Pomodoro */
+.timer-container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#timer-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: rotate(-90deg); /* Start from top */
+}
+
+.timer-text {
+  position: absolute;
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--text-color);
+  z-index: 10;
+}
+
+.controls button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  margin: 0 5px;
+  margin-top: 5px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: transform 0.1s, opacity 0.2s, background 0.2s;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: white;
+  box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+}
+
+.btn-secondary {
+  background: #f0f0f0;
+  color: #555;
+}
+
+.controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.controls button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.stats-container {
+  margin-top: 20px;
+  padding: 10px 15px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Todos */
+.todo-section {
+  align-items: stretch; /* Change to stretch to fill width */
+  display: flex;
+  flex-direction: column;
+}
+
+.todo-input-container {
+  display: flex;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+#todo-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 8px;
+  outline: none;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+#todo-input:focus {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 2px var(--secondary-color);
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--secondary-color);
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s;
+}
+
+.btn-icon:active {
+  transform: scale(0.9);
+}
+
+.todo-list {
+  flex: 1;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Custom scrollbar for todo list */
+.todo-list::-webkit-scrollbar {
+  width: 6px;
+}
+.todo-list::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.1);
+  border-radius: 3px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.4);
+  margin-bottom: 8px;
+  border-radius: 8px;
+  transition: background 0.2s;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.todo-item:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.todo-item input[type="checkbox"] {
+  margin-right: 12px;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--secondary-color);
+  cursor: pointer;
+}
+
+.todo-item span.todo-text {
+  flex: 1;
+  font-size: 0.95rem;
+  color: var(--text-color);
+  word-break: break-all;
+}
+
+.todo-item.completed span.todo-text {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.btn-delete {
+  background: transparent;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 5px;
+  border-radius: 4px;
+  opacity: 0; /* Hidden by default */
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.todo-item:hover .btn-delete {
+  opacity: 1;
+}
+
+.btn-delete:hover {
+  color: #ff6b6b; /* Red on hover */
+  background: rgba(255, 107, 107, 0.1);
+}
+
+.todo-footer {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-text {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.btn-text:hover {
+  color: var(--text-color);
+}
+
+
+/* Pet */
+.pet-section {
+  justify-content: center;
+}
+
+.pet-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  cursor: pointer;
+}
+
+.cat {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  animation: float 3s ease-in-out infinite;
+  transition: transform 0.2s;
+}
+
+.cat:hover {
+  transform: scale(1.05);
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.face {
+  width: 120px;
+  height: 100px;
+  background: #ffcc5c;
+  border-radius: 60px 60px 50px 50px;
+  position: absolute;
+  bottom: 0;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  overflow: hidden; /* Ensures eyes stay inside if needed */
+  z-index: 2;
+}
+
+.ear {
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 40px solid #ffcc5c;
+  position: absolute;
+  top: -10px;
+  z-index: 1;
+}
+
+.left-ear { left: 10px; transform: rotate(-15deg); }
+.right-ear { right: 10px; transform: rotate(15deg); }
+
+.eye {
+  width: 16px;
+  height: 16px;
+  background: #333;
+  border-radius: 50%;
+  position: absolute;
+  top: 35px;
+  transition: all 0.3s;
+}
+
+.left-eye { left: 30px; }
+.right-eye { right: 30px; }
+
+.nose {
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 10px solid #ff6b6b;
+  position: absolute;
+  top: 55px;
+  left: 52px;
+  border-radius: 3px;
+}
+
+.mouth {
+  width: 20px;
+  height: 10px;
+  border-bottom: 2px solid #333;
+  border-radius: 0 0 10px 10px;
+  position: absolute;
+  top: 65px;
+  left: 50px;
+  transition: all 0.3s;
+}
+
+/* Moods */
+
+/* Focused: Squinting eyes (semicircle), straight mouth */
+.mood-focused .eye {
+  height: 8px;
+  border-radius: 10px 10px 0 0; /* Upper half */
+  top: 40px;
+}
+.mood-focused .mouth {
+  height: 0;
+  border-bottom: 2px solid #333;
+  border-radius: 0;
+  width: 16px;
+  left: 52px;
+}
+
+/* Happy: Star eyes (simulated with unicode or shape), big laugh mouth */
+/* Let's use simple big round eyes for happy or curved up eyes */
+.mood-happy .eye {
+  height: 12px;
+  width: 18px;
+  border-radius: 50%;
+  background: transparent;
+  border-top: 3px solid #333; /* ^ shape eyes */
+  top: 40px;
+}
+.mood-happy .mouth {
+  height: 18px;
+  width: 24px;
+  border-radius: 0 0 12px 12px;
+  background: #ff6b6b; /* Open mouth */
+  border: none;
+  left: 48px;
+  top: 65px;
+}
+
+/* Tips: Normal eyes, mouth 'o' shape */
+.mood-tips .mouth {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #333;
+  background: #333;
+  top: 68px;
+  left: 54px;
+}
+
+/* Speech Bubble */
+.speech-bubble {
+  position: absolute;
+  top: 80px; /* Above the cat */
+  background: white;
+  padding: 10px 15px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  max-width: 180px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #555;
+  z-index: 100;
+  opacity: 1;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px 8px 0;
+  border-style: solid;
+  border-color: white transparent transparent transparent;
+}
+
+.speech-bubble.hidden {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.pet-status {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+  background: rgba(255, 255, 255, 0.3);
+  padding: 10px 20px;
+  border-radius: 10px;
+  width: 80%;
+}
+
+.pet-status p {
+  margin: 5px 0;
+}
+  /* width: 14px;
+  height: 14px;
+  background: #333;
+  border-radius: 50%;
+  position: absolute;
+  top: 35px;
+  animation: blink 4s infinite;
+} */
+
+@keyframes blink {
+  0%, 96%, 100% { height: 14px; }
+  98% { height: 2px; }
+}
+
+.left-eye { left: 30px; }
+.right-eye { right: 30px; }
+
+.nose {
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #ff6b6b;
+  position: absolute;
+  top: 55px;
+  left: 54px;
+}
+
+.mouth {
+  width: 24px;
+  height: 12px;
+  border-bottom: 2px solid #333;
+  border-radius: 0 0 12px 12px;
+  position: absolute;
+  top: 60px;
+  left: 48px;
+}

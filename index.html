@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>PomoPet</title>
+  </head>
+  <body>
+    <!-- Drag Region -->
+    <div id="drag-region"></div>
+    
+    <div class="app-container">
+      <!-- Left Column: Pomodoro -->
+      <div class="column pomodoro-section">
+        <h2>番茄钟</h2>
+        <div class="timer-container">
+          <canvas id="timer-canvas" width="200" height="200"></canvas>
+          <div class="timer-text">
+            <span id="time-display">25:00</span>
+          </div>
+        </div>
+        <div class="controls">
+          <button id="start-btn" class="btn-primary">开始</button>
+          <button id="pause-btn" class="btn-secondary" disabled>暂停</button>
+          <button id="reset-btn" class="btn-secondary">重置</button>
+        </div>
+        <div class="stats-container">
+          <p id="today-stats">今日专注：0次，共0分钟</p>
+        </div>
+      </div>
+
+      <!-- Center Column: Todos -->
+      <div class="column todo-section">
+        <h2>待办事项</h2>
+        
+        <div class="todo-input-container">
+          <input type="text" id="todo-input" placeholder="添加新任务..." />
+          <button id="add-todo-btn" class="btn-icon">+</button>
+        </div>
+
+        <ul id="todo-list" class="todo-list">
+          <!-- Items will be injected here via renderer.js -->
+        </ul>
+
+        <div class="todo-footer">
+          <button id="clear-completed-btn" class="btn-text">清空已完成</button>
+        </div>
+      </div>
+
+      <!-- Right Column: Pet -->
+      <div class="column pet-section">
+        <h2>我的宠物</h2>
+        
+        <!-- Speech Bubble -->
+        <div id="pet-speech-bubble" class="speech-bubble hidden">
+          <p id="speech-text">...</p>
+        </div>
+
+        <div class="pet-container" id="pet-container">
+          <div id="cat" class="cat mood-default">
+            <div class="ear left-ear"></div>
+            <div class="ear right-ear"></div>
+            <div class="face">
+              <div class="eye left-eye"></div>
+              <div class="eye right-eye"></div>
+              <div class="nose"></div>
+              <div class="mouth"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pet-status">
+          <p id="pet-mood-text">当前心情：开心</p>
+          <p id="pet-coins">💰 0</p>
+        </div>
+      </div>
+    </div>
+    
+    <script type="module" src="/src/renderer.js"></script>
+  </body>
+</html>
